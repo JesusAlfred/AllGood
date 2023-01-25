@@ -1,15 +1,52 @@
 <template>
-<v-stage 
-  ref="stage" 
-  :config="stageSize"
-  @mousedown="handleStageMouseDown"
-  @touchstart="handleStageMouseDown"
-  >
+<Header/>
+<div id="container">
+<div id="Panel">
+  <v-stage 
+    ref="panel" 
+    :config="panelSize"
+    @mousedown="handlePanelMouseDown"
+    >
+    <v-layer 
+    ref="layer"
+    class="layer"
+    >
+      <v-rect
+        :config="{
+            x: -1,
+            y: -1,
+            width: panelSize.width + 1,
+            height: panelSize.height + 2,
+            fill: '#F9FFFF',
+            stroke: 'black',
+            strokeWidth: 1
+        }">
+      </v-rect>
+      <Start
+        :config="{
+            name: 'Pstart',
+            x: 30,
+            y: 30,
+            radius: 20,
+            fill: 'white',
+            stroke: 'black',
+            strokeWidth: 4,
+          }"
+      />
+    </v-layer>
+  </v-stage>
+</div>
+<div id="Canva">
+  <v-stage 
+    ref="stage" 
+    :config="stageSize"
+    @mousedown="handleStageMouseDown"
+    @touchstart="handleStageMouseDown"
+    >
       <v-layer 
       ref="layer"
       class="layer"
       >
-
       <!-- Diagram -->
       <Start
         v-for="item in shapes.starts"
@@ -35,25 +72,34 @@
         :rotateEnabled="false"
         :flipEnabled="false"
         :enabledAnchors= "enabledAnchors"/>
-      </v-layer>
-    </v-stage>
+    </v-layer>
+  </v-stage>
+</div>
+</div>
 </template>
 
 <script>
 const width = window.innerWidth;
-const height = window.innerHeight;
+const height = window.innerHeight - 40;
 import Konva from 'konva';
 import Start from '../components/Start.vue';
 import End from '../components/End.vue';
 import Decision from '../components/Decision.vue';
 import Process from '../components/Process.vue';
 
+import Header from '../components/Header.vue'
+
 export default {
   data() {
     return {
       stageSize: {
-        width: width,
+        width: width * 4/5,
         height: height
+      },
+      panelSize: {
+        width: width * 1/5,
+        height: height,
+        fill: 'red'
       },
       isDragging: false,
       enabledAnchors: [],
@@ -63,22 +109,12 @@ export default {
             name: "inicio",
             x: 100,
             y: 100,
-            radius: 100,
+            radius: 20,
             fill: "white",
             stroke: "black",
             strokeWidth: 4,
             draggable: true,
-          },
-          {
-            name: "inicio2",
-            x: 100,
-            y: 100,
-            radius: 100,
-            fill: "white",
-            stroke: "black",
-            strokeWidth: 4,
-            draggable: true,
-          },
+          }
         ],
         ends: [
           {
@@ -106,9 +142,10 @@ export default {
           }
         ]
       },
+      startCounter: 0
     };
   },
-  components: {Start, End, Decision, Process},
+  components: {Start, End, Decision, Process, Header},
   methods: {
     handleDragStart() {
       this.isDragging = true;
@@ -217,7 +254,35 @@ export default {
         }
       }
       return type_of_shape;
+    },
+    handlePanelMouseDown(e){
+      if (e.target === e.target.getStage()) {
+        return;
+      }
+      const name = e.target.name();
+      switch (name){
+        case 'Pstart':
+          this.startCounter += 1;
+          const PstartBase = {
+            name: "Pinicio" + this.startCounter.toString(),
+            x: 100,
+            y: 100,
+            radius: 20,
+            fill: "white",
+            stroke: "black",
+            strokeWidth: 4,
+            draggable: true,
+          }
+          this.shapes.starts.push(PstartBase);
+          break
+      }
     }
   }
 };
 </script>
+<style scoped>
+  #container{
+    display: flex;
+    flex-direction: row;
+  }
+</style>
