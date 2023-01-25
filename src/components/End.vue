@@ -1,27 +1,29 @@
 <template>
-    <v-circle :config="configCircle"></v-circle>
+    <v-circle :config="configCircle" @transformend="sendEvent"></v-circle>
     </template>
-    
+
 <script lang="js">
-    export default {
-      name: 'End',
-      data() {
-        return {
-          configKonva: {
-            width: 200,
-            height: 200
-          },
-          configCircle: {
-            x: 100,
-            y: 100,
-            radius: 100,
-            fill: "black",
-            stroke: "black",
-            strokeWidth: 4,
-            draggable: true
-          }
-        };
-      }
-    };
+export default {
+  name: 'End',
+  emits: ["transformend"],
+  props: {
+    configCircle: Object,
+  },
+  mounted() {
     
+  },
+  data() {
+    return {
+      configKonva: {
+        width: 200,
+        height: 200
+      },
+    };
+  },
+  methods: {
+    sendEvent(e) {
+      this.$emit("transformend", e);
+    }
+  }
+};
 </script>

@@ -17,7 +17,12 @@
         :configCircle="item"
         @transformend="handleTransformEnd"
       />
-      <!-- <End /> -->
+      <End 
+        v-for="item in shapes.ends"
+        :key="item.id"
+        :configCircle="item"
+        @transformend="handleTransformEnd"
+      />
       <!-- <Decision /> -->
       <!--  <Process /> -->
       <v-transformer ref="transformer" />
@@ -64,6 +69,18 @@ export default {
             draggable: true,
             name: "inicio2",
           },
+        ],
+        ends: [
+          {
+            x: 100,
+            y: 100,
+            radius: 20,
+            fill: "black",
+            stroke: "black",
+            strokeWidth: 4,
+            draggable: true,
+            name: "end",
+          }
         ]
       },
     };
