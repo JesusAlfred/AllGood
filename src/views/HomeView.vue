@@ -14,18 +14,27 @@
       <Start
         v-for="item in shapes.starts"
         :key="item.id"
-        :configCircle="item"
+        :config="item"
         @transformend="handleTransformEnd"
       />
       <End 
         v-for="item in shapes.ends"
         :key="item.id"
-        :configCircle="item"
+        :config="item"
         @transformend="handleTransformEnd"
       />
       <!-- <Decision /> -->
-      <!--  <Process /> -->
-      <v-transformer ref="transformer" />
+      <Process 
+        v-for="item in shapes.processes"
+        :key="item.id"
+        :config="item"
+        @transformend="handleTransformEnd"
+      />
+      <v-transformer
+        ref="transformer"
+        :rotateEnabled="false"
+        :flipEnabled="false"
+        :enabledAnchors= "enabledAnchors"/>
       </v-layer>
     </v-stage>
 </template>
@@ -47,9 +56,11 @@ export default {
         height: height
       },
       isDragging: false,
+      enabledAnchors: [],
       shapes: {
         starts: [
           {
+            name: "inicio",
             x: 100,
             y: 100,
             radius: 100,
@@ -57,9 +68,9 @@ export default {
             stroke: "black",
             strokeWidth: 4,
             draggable: true,
-            name: "inicio",
           },
           {
+            name: "inicio2",
             x: 100,
             y: 100,
             radius: 100,
@@ -67,11 +78,11 @@ export default {
             stroke: "black",
             strokeWidth: 4,
             draggable: true,
-            name: "inicio2",
           },
         ],
         ends: [
           {
+            name: "end",
             x: 100,
             y: 100,
             radius: 20,
@@ -79,7 +90,19 @@ export default {
             stroke: "black",
             strokeWidth: 4,
             draggable: true,
-            name: "end",
+          }
+        ],
+        processes: [
+          {
+            name: "process1",
+            x: 100,
+            y: 50,
+            width: 200,
+            height: 100,
+            fill: 'white',
+            stroke: "black",
+            draggable: true,
+            // shadowBlur: 10
           }
         ]
       },
@@ -98,6 +121,7 @@ export default {
       // find element in our state
       const shape = this.getShape(this.selectedShapeName);
       // update the state
+      console.log(shape.name);
       shape.x = e.target.x();
       shape.y = e.target.y();
       shape.rotation = e.target.rotation();
@@ -127,6 +151,18 @@ export default {
       const shape = this.getShape(name);
       if (shape) {
         this.selectedShapeName = name;
+        let caso = this.getSelectedShapeType(this.selectedShapeName);
+        switch(caso){
+          case 'starts':
+            this.enabledAnchors = [];
+          break
+          case 'ends':
+            this.enabledAnchors = [];
+          break
+          case 'processes':
+            this.enabledAnchors = ['top-center', 'middle-right', 'middle-left', 'bottom-center'];
+          break
+        }
       } else {
         this.selectedShapeName = '';
       }
@@ -166,6 +202,22 @@ export default {
       }
       return shape;
     },
+    getSelectedShapeType(name){
+      let shape = undefined;
+      let type_of_shape;
+      for (const s in this.shapes) {
+        shape = this.shapes[s].find( (r) => {
+          if(r.name === name){
+            return r;
+          }
+        });
+        if(shape != undefined) {
+          type_of_shape = s;
+          break;
+        }
+      }
+      return type_of_shape;
+    }
   }
 };
 </script>

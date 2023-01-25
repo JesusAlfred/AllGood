@@ -1,5 +1,5 @@
 <template>
-<v-circle :config="configCircle" @transformend="sendEvent"></v-circle>
+<v-circle :config="config" @transformend="sendEvent"></v-circle>
 </template>
 
 <script lang="js">
@@ -7,17 +7,10 @@ export default {
   name: 'Start',
   emits: ["transformend"],
   props: {
-    configCircle: Object,
-  },
-  mounted() {
-    
+    config: Object,
   },
   data() {
     return {
-      configKonva: {
-        width: 200,
-        height: 200
-      },
     };
   },
   methods: {
@@ -26,5 +19,4 @@ export default {
     }
   }
 };
-
 </script>
