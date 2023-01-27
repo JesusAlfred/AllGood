@@ -125,13 +125,11 @@ export default {
     },
     handleTransformStart(e) {
       const shape = this.getShape(this.selectedShapeName);
-      console.log(shape.hideEdit);
       if (shape.hasOwnProperty('hideEdit')){
         shape.hideEdit = true;
       }
     },
     handleTransformEnd(e) {
-      console.log("end" ,e.target.attrs);
       // shape is transformed, let us save new attrs back to the node
       // find element in our state
       const shape = this.getShape(this.selectedShapeName);
@@ -140,7 +138,7 @@ export default {
       shape.x = parent.x();
       shape.y = parent.y();
       shape.rotation = parent.rotation();
-      
+
       shape.scaleX = e.target.scaleX();
       shape.scaleY = e.target.scaleY();
       setTimeout(() => {
