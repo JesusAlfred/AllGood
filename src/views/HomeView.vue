@@ -54,7 +54,7 @@
 <script>
 const width = window.innerWidth;
 const height = window.innerHeight - 40;
-import Konva from 'konva';
+
 import Start from '../components/Start.vue';
 import End from '../components/End.vue';
 import Decision from '../components/Decision.vue';
@@ -81,35 +81,12 @@ export default {
         starts: [
         ],
         ends: [
-          {
-            name: "end",
-            x: 100,
-            y: 100,
-            radius: 20,
-            fill: "black",
-            stroke: "black",
-            strokeWidth: 4,
-            draggable: true,
-          }
         ],
         processes: [
-          {
-            name: "process1",
-            x: 100,
-            y: 50,
-            width: 200,
-            height: 100,
-            fill: 'red',
-            stroke: "black",
-            draggable: true,
-            text: "Nada",
-            scaleX: 1,
-            scaleY: 1,
-            hideEdit: false
-          }
         ]
       },
-      startCounter: 0
+      startCounter: 0,
+      endCounter: 0
     };
   },
   components: {Start, End, Decision, Process, Header, Panel},
@@ -241,13 +218,15 @@ export default {
         return;
       }
       const name = e.target.name();
+      const initx = 50;
+      const inity = 50;
       switch (name){
         case 'Pstart':
           this.startCounter += 1;
           const PstartBase = {
             name: "Pinicio" + this.startCounter.toString(),
-            x: 100,
-            y: 100,
+            x: initx,
+            y: inity,
             radius: 20,
             fill: "white",
             stroke: "black",
@@ -255,6 +234,38 @@ export default {
             draggable: true,
           }
           this.shapes.starts.push(PstartBase);
+          break
+        case 'Pend':
+          this.endCounter += 1;
+          const PendBase = {
+            name: "Pend" + this.startCounter.toString(),
+            x: initx,
+            y: inity,
+            radius: 20,
+            fill: "black",
+            stroke: "black",
+            strokeWidth: 4,
+            draggable: true,
+          }
+          this.shapes.ends.push(PendBase);
+          break
+        case 'Pprocess':
+          this.endCounter += 1;
+          const PprocessBase = {
+            name: "Pprocess" + this.startCounter.toString(),
+            x: initx,
+            y: inity,
+            width: 200,
+            height: 100,
+            fill: 'white',
+            stroke: "black",
+            draggable: true,
+            text: "...",
+            scaleX: 1,
+            scaleY: 1,
+            hideEdit: false
+          }
+          this.shapes.processes.push(PprocessBase);
           break
       }
     }

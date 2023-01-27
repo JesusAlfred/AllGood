@@ -8,52 +8,20 @@
     ref="layer"
     class="layer"
     >
-      <v-rect
-        :config="{
-            x: -1,
-            y: -1,
-            width: panelSize.width,
-            height: panelSize.height + 2,
-            fill: '#F9FFFF',
-            stroke: 'black',
-            strokeWidth: 1,
-            listening: false
-        }">
-      </v-rect>
+      <v-rect :config="rectConfig" />
 
+      <StartButton :position="{x: xPadding, y: 30}"/> 
+      <EndButton :position="{x: xPadding + 60 + (panelSize.width - 120 - xPadding*2), y: 30}"/> 
+      <ProcessButton :position="{x:xPadding, y: 140}"/>
 
-      <Start
-        :config="{
-            name: 'Pstart',
-            x: 30,
-            y: 30,
-            radius: 20,
-            fill: 'white',
-            stroke: 'black',
-            strokeWidth: 4,
-          }"
-      />
-      <v-label
-        :config="{
-          name: 'PstartLabel',
-          x: 30,
-          y: 50,
-          text: 'Hello World!',
-          fontSize: 50,
-          lineHeight: 1.2,
-          padding: 10,
-          fill: 'green'
-        }"
-      ></v-label>
     </v-layer>
   </v-stage>
 </template>
 
 <script lang="js">
-import Start from '../components/Start.vue';
-import End from '../components/End.vue';
-import Decision from '../components/Decision.vue';
-import Process from '../components/Process.vue';
+import StartButton from './PanelButtons/StartButton.vue';
+import EndButton from './PanelButtons/EndButton.vue';
+import ProcessButton from './PanelButtons/ProcessButton.vue'
 
   export default {
     name: 'Panel',
@@ -63,9 +31,20 @@ import Process from '../components/Process.vue';
     },
     data() {
         return {
+          rectConfig: {
+            x: -1,
+            y: -1,
+            width: this.panelSize.width,
+            height: this.panelSize.height + 2,
+            fill: '#F9FFFF',
+            stroke: 'black',
+            strokeWidth: 1,
+            listening: false
+          },
+          xPadding: (this.panelSize.width - 120) / 3
         };
     },
-    components: {Start, End, Decision, Process},
+    components: {StartButton, EndButton, ProcessButton},
     methods: {
       handlePanelMouseDown(e) {
         this.$emit("handlePanelMouseDown", e);
