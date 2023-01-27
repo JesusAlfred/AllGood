@@ -2,39 +2,10 @@
 <Header/>
 <div id="container">
 <div id="Panel">
-  <v-stage 
-    ref="panel" 
-    :config="panelSize"
-    @mousedown="handlePanelMouseDown"
-    >
-    <v-layer 
-    ref="layer"
-    class="layer"
-    >
-      <v-rect
-        :config="{
-            x: -1,
-            y: -1,
-            width: panelSize.width + 1,
-            height: panelSize.height + 2,
-            fill: '#F9FFFF',
-            stroke: 'black',
-            strokeWidth: 1
-        }">
-      </v-rect>
-      <Start
-        :config="{
-            name: 'Pstart',
-            x: 30,
-            y: 30,
-            radius: 20,
-            fill: 'white',
-            stroke: 'black',
-            strokeWidth: 4,
-          }"
-      />
-    </v-layer>
-  </v-stage>
+  <Panel 
+    :panelSize="panelSize"
+    @handlePanelMouseDown="handlePanelMouseDown"
+  />
 </div>
 <div id="Canva">
   <v-stage 
@@ -66,11 +37,13 @@
         :key="item.id"
         :config="item"
         @transformend="handleTransformEnd"
+        @transformstart="handleTransformStart"
       />
       <v-transformer
         ref="transformer"
         :rotateEnabled="false"
         :flipEnabled="false"
+        :ignoreStroke="true"
         :enabledAnchors= "enabledAnchors"/>
     </v-layer>
   </v-stage>
@@ -86,6 +59,7 @@ import Start from '../components/Start.vue';
 import End from '../components/End.vue';
 import Decision from '../components/Decision.vue';
 import Process from '../components/Process.vue';
+import Panel from '../components/Panel.vue'
 
 import Header from '../components/Header.vue'
 
@@ -105,16 +79,6 @@ export default {
       enabledAnchors: [],
       shapes: {
         starts: [
-          {
-            name: "inicio",
-            x: 100,
-            y: 100,
-            radius: 20,
-            fill: "white",
-            stroke: "black",
-            strokeWidth: 4,
-            draggable: true,
-          }
         ],
         ends: [
           {
@@ -135,17 +99,23 @@ export default {
             y: 50,
             width: 200,
             height: 100,
-            fill: 'white',
+            fill: 'red',
             stroke: "black",
             draggable: true,
-            // shadowBlur: 10
+            text: "Nada",
+            scaleX: 1,
+            scaleY: 1,
+            hideEdit: false
           }
         ]
       },
-      startCounter: 0
+      startCounter: 0,
+      tScaleX: 1,
+      tempW: 1,
+      tempH: 1,
     };
   },
-  components: {Start, End, Decision, Process, Header},
+  components: {Start, End, Decision, Process, Header, Panel},
   methods: {
     handleDragStart() {
       this.isDragging = true;
@@ -153,20 +123,36 @@ export default {
     handleDragEnd() {
       this.isDragging = false;
     },
+    handleTransformStart(e) {
+      const shape = this.getShape(this.selectedShapeName);
+      console.log(shape.hideEdit);
+      if (shape.hasOwnProperty('hideEdit')){
+        shape.hideEdit = true;
+      }
+    },
     handleTransformEnd(e) {
+      console.log("end" ,e.target.attrs);
       // shape is transformed, let us save new attrs back to the node
       // find element in our state
       const shape = this.getShape(this.selectedShapeName);
       // update the state
-      console.log(shape.name);
-      shape.x = e.target.x();
-      shape.y = e.target.y();
-      shape.rotation = e.target.rotation();
+      const parent = e.target.getParent();
+      shape.x = parent.x();
+      shape.y = parent.y();
+      shape.rotation = parent.rotation();
+      
       shape.scaleX = e.target.scaleX();
       shape.scaleY = e.target.scaleY();
-
-      // change fill
-      shape.fill = Konva.Util.getRandomColor();
+      setTimeout(() => {
+        shape.scaleX = 1;
+        shape.scaleY = 1;
+        shape.width = Math.max(shape.width * e.target.scaleX(), 5);
+        shape.height = Math.max(shape.height * e.target.scaleY(), 5);
+        if (shape.hasOwnProperty('hideEdit')){
+        shape.hideEdit = false;
+        }
+      }, 10);
+      
     },
     handleStageMouseDown(e) {
       // clicked on stage - clear selection
@@ -197,7 +183,7 @@ export default {
             this.enabledAnchors = [];
           break
           case 'processes':
-            this.enabledAnchors = ['top-center', 'middle-right', 'middle-left', 'bottom-center'];
+            this.enabledAnchors = ['middle-right', 'bottom-center', 'bottom-right'];
           break
         }
       } else {

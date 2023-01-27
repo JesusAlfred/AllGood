@@ -1,5 +1,6 @@
 <template>
-<v-circle :config="config" @transformend="sendEvent"></v-circle>
+<v-circle :config="config" @transformend="sendEvent">
+</v-circle>
 </template>
 
 <script lang="js">
