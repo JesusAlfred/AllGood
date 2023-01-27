@@ -109,10 +109,7 @@ export default {
           }
         ]
       },
-      startCounter: 0,
-      tScaleX: 1,
-      tempW: 1,
-      tempH: 1,
+      startCounter: 0
     };
   },
   components: {Start, End, Decision, Process, Header, Panel},
