@@ -47,7 +47,9 @@
           image: image,
           visible: !config.hideEdit
         }
-      "/>
+      "
+      @mouseup="editProcess"
+      />
     </v-label>
   </v-label>
 </template>
@@ -55,7 +57,7 @@
 <script lang="js">
   export default {
     name: 'Process',
-    emits: ["transformend", "transformstart"],
+    emits: ["transformend", "transformstart", "editProcess"],
     props: {
       config: Object,
     },
@@ -80,6 +82,9 @@
       },
       sendEvent2(e) {
         this.$emit("transformstart", e);
+      },
+      editProcess(e){
+        this.$emit("editProcess", this.config.name);
       }
     }
   };

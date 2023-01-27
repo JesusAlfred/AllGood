@@ -38,6 +38,7 @@
         :config="item"
         @transformend="handleTransformEnd"
         @transformstart="handleTransformStart"
+        @editProcess="editProcess"
       />
       <v-transformer
         ref="transformer"
@@ -86,7 +87,8 @@ export default {
         ]
       },
       startCounter: 0,
-      endCounter: 0
+      endCounter: 0,
+      processCounter: 0
     };
   },
   components: {Start, End, Decision, Process, Header, Panel},
@@ -213,6 +215,13 @@ export default {
       }
       return type_of_shape;
     },
+    editProcess(name){
+      const shape = this.getShape(name);
+      shape.text = this.getNewText();;
+    },
+    getNewText(){
+      return prompt("Ingrese instrucciones", "");
+    },
     handlePanelMouseDown(e){
       if (e.target === e.target.getStage()) {
         return;
@@ -250,9 +259,9 @@ export default {
           this.shapes.ends.push(PendBase);
           break
         case 'Pprocess':
-          this.endCounter += 1;
+          this.processCounter += 1;
           const PprocessBase = {
-            name: "Pprocess" + this.startCounter.toString(),
+            name: "Pprocess" + this.processCounter.toString(),
             x: initx,
             y: inity,
             width: 200,
