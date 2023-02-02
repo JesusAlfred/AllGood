@@ -40,6 +40,17 @@
         @transformstart="handleTransformStart"
         @editProcess="editProcess"
       />
+      <v-line
+        :config="
+        {
+          x: 0,
+          y: 0,
+          points: line.points,
+          stroke: 'red',
+          strokeWidth: 1,
+          draggable: true
+        }"
+      />
       <v-transformer
         ref="transformer"
         :rotateEnabled="false"
@@ -86,6 +97,8 @@ export default {
         processes: [
         ]
       },
+      rows: [{}],
+      line: {points: []},
       startCounter: 0,
       endCounter: 0,
       processCounter: 0
@@ -129,6 +142,28 @@ export default {
       
     },
     handleStageMouseDown(e) {
+      if(true) {
+        let temp = [...this.line.points]
+        const nx = e.evt.layerX;
+        const ny = e.evt.layerY;
+        const lx = temp[temp.length-2];
+        const ly = temp[temp.length-1];
+        let x = nx;
+        let y = ny;
+        if(lx != undefined && ly != undefined){
+          if(Math.abs(nx - lx) > Math.abs(ny-ly)){
+            y = ly;
+          }else{
+            x = lx;
+          } 
+        }
+
+        temp.push(x);
+        temp.push(y);
+        this.line.points = temp;
+        console.log(...this.line.points);
+        return;
+      }
       // clicked on stage - clear selection
       if (e.target === e.target.getStage()) {
         this.selectedShapeName = '';
