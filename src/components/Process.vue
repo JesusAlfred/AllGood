@@ -9,8 +9,8 @@
     <v-rect :config="
     {
       name: config.name,
-      //x: config.x,
-      //y: config.y,
+      x: -config.width/2,
+      y: -config.height/2,
       width: config.width,
       height: config.height,
       fill: config.fill,
@@ -26,8 +26,8 @@
     ></v-rect>
     <v-text :config="
       {
-        x: 0,
-        y: 0,
+        x: -config.width/2,
+        y: -config.height/2,
         text: config.text,
         fontFamily: 'Calibri',
         fontSize: 18,
@@ -36,10 +36,18 @@
         draggable: false,
       }
     " />
+    <!--<v-circle
+      :config="{
+        x: 0,
+        y: 0,
+        radius: 1,
+        fill: 'back'
+      }"
+    />-->
     <v-label :config="
       {
-        x: config.width - 24,
-        y: 0       
+        x: config.width/2 - 24,
+        y: -config.height/2
       }
     ">
       <v-image :config="

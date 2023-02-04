@@ -1,5 +1,5 @@
 <template>
-<Header/>
+<Header @toggleGrid="toggleGrid"/>
 <div id="container">
 <div id="Panel">
   <Panel 
@@ -19,17 +19,26 @@
       class="layer"
       >
       <!-- Diagram -->
+      <Grid
+        v-if="grid"
+        :space="30"
+        :stageSize="stageSize"
+      />
       <Start
         v-for="item in shapes.starts"
         :key="item.id"
         :config="item"
         @transformend="handleTransformEnd"
+        @dragstart="handleDragStart"
+        @dragend="handleDragEnd"
       />
       <End 
         v-for="item in shapes.ends"
         :key="item.id"
         :config="item"
         @transformend="handleTransformEnd"
+        @dragstart="handleDragStart"
+        @dragend="handleDragEnd"
       />
       <!-- <Decision /> -->
       <Process 
@@ -39,6 +48,8 @@
         @transformend="handleTransformEnd"
         @transformstart="handleTransformStart"
         @editProcess="editProcess"
+        @dragstart="handleDragStart"
+        @dragend="handleDragEnd"
       />
       <v-transformer
         ref="transformer"
@@ -53,16 +64,17 @@
 </template>
 
 <script>
-const width = window.innerWidth;
-const height = window.innerHeight - 40;
+const width = document.body.clientWidth;
+const height = window.innerHeight - 40 + 720;
 
 import Start from '../components/Start.vue';
 import End from '../components/End.vue';
 import Decision from '../components/Decision.vue';
 import Process from '../components/Process.vue';
-import Panel from '../components/Panel.vue'
+import Panel from '../components/Panel.vue';
+import Grid from '../components/Grid.vue';
 
-import Header from '../components/Header.vue'
+import Header from '../components/Header.vue';
 
 export default {
   data() {
@@ -74,7 +86,6 @@ export default {
       panelSize: {
         width: width * 1/5,
         height: height,
-        fill: 'red'
       },
       isDragging: false,
       enabledAnchors: [],
@@ -86,18 +97,39 @@ export default {
         processes: [
         ]
       },
+      grid: false,
       startCounter: 0,
       endCounter: 0,
       processCounter: 0
     };
   },
-  components: {Start, End, Decision, Process, Header, Panel},
+  components: {Start, End, Decision, Process, Header, Panel, Grid},
+  created() {
+    window.addEventListener("resize", this.resizeScreen);
+    setTimeout(() => {
+      this.resizeScreen();
+    }, 500);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.resizeScreen);
+  },
   methods: {
-    handleDragStart() {
+    handleDragStart(e) {
       this.isDragging = true;
     },
-    handleDragEnd() {
+    handleDragEnd(e) {
       this.isDragging = false;
+      const name = this.selectedShapeName;
+      const shape = this.getShape(name);
+      const shapetype = this.getSelectedShapeType(name);
+      let newx = e.target.attrs.x;
+      let newy = e.target.attrs.y;
+      shape.x = newx;
+      shape.y = newy;
+      setTimeout(() => {
+        shape.x = Math.round(newx/30)*30;
+        shape.y = Math.round(newy/30)*30;
+      }, 100); 
     },
     handleTransformStart(e) {
       const shape = this.getShape(this.selectedShapeName);
@@ -227,8 +259,8 @@ export default {
         return;
       }
       const name = e.target.name();
-      const initx = 50;
-      const inity = 50;
+      const initx = 30;
+      const inity = 30;
       switch (name){
         case 'Pstart':
           this.startCounter += 1;
@@ -277,6 +309,21 @@ export default {
           this.shapes.processes.push(PprocessBase);
           break
       }
+    },
+    toggleGrid(e){
+      this.grid = !this.grid;
+    },
+    resizeScreen(e){
+      const nstageSize= {
+        width: document.body.clientWidth * 4/5,
+        height: height
+      };
+      this.stageSize= nstageSize;
+      const npanelSize= {
+        width: document.body.clientWidth * 1/5,
+        height: window.innerHeight-40,
+      };
+      this.panelSize= npanelSize;
     }
   }
 };
@@ -285,5 +332,14 @@ export default {
   #container{
     display: flex;
     flex-direction: row;
+    padding-top: 40px;
+  }
+  #Panel{
+    position: fixed;
+    z-index: 1000;
+  }
+  #Canva{
+    padding-left: 20%;
+    margin: 0;
   }
 </style>

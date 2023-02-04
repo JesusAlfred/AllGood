@@ -49,6 +49,16 @@ import ProcessButton from './PanelButtons/ProcessButton.vue'
       handlePanelMouseDown(e) {
         this.$emit("handlePanelMouseDown", e);
       }
-    }
+    },
+    watch: {
+      'panelSize': {
+        handler(newValue, oldValue) {
+          this.rectConfig.width= newValue.width;
+          this.rectConfig.height= newValue.height;
+          this.xPadding= (newValue.width - 120) / 3
+        },
+        deep: true
+      }
+    },
   };
 </script>
