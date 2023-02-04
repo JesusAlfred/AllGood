@@ -9,8 +9,8 @@
       <Process
         :config="{
           name: 'Pprocess',
-          x: 20,
-          y: 10,
+          x: 20 + 80/2,
+          y: 10 + 40/2,
           width: 80,
           height: 40,
           fill: 'white',
