@@ -1,5 +1,5 @@
 <template>
-<Header @toggleGrid="toggleGrid"/>
+<Header @toggleGrid="toggleGrid" @toggleLineTool="toggleLineTool"/>
 <div id="container">
 <div id="Panel">
   <Panel 
@@ -23,6 +23,19 @@
         v-if="grid"
         :space="30"
         :stageSize="stageSize"
+      />
+      <v-line
+        v-for="item in lines"
+        :key=item
+        :config="
+        {
+          x: 0,
+          y: 0,
+          points: item.points,
+          stroke: item.color,
+          strokeWidth: 5,
+          draggable: false
+        }"
       />
       <Start
         v-for="item in shapes.starts"
@@ -48,17 +61,7 @@
         @transformend="handleTransformEnd"
         @transformstart="handleTransformStart"
         @editProcess="editProcess"
-      />
-      <v-line
-        :config="
-        {
-          x: 0,
-          y: 0,
-          points: line.points,
-          stroke: 'red',
-          strokeWidth: 1,
-          draggable: true
-        }"
+        @dragend="handleDragEnd"
       />
       <v-transformer
         ref="transformer"
@@ -106,12 +109,18 @@ export default {
         processes: [
         ]
       },
-      grid: false,
-      rows: [{}],
-      line: {points: []},
+      grid: true,
+      lines: [
+        {
+          points: [],
+          color: "#" + Math.floor(Math.random()*16777215).toString(16)
+        }
+      ],
       startCounter: 0,
       endCounter: 0,
-      processCounter: 0
+      processCounter: 0,
+      linesCounter: 0,
+      lineTool: false
     };
   },
   components: {Start, End, Decision, Process, Header, Panel, Grid},
@@ -132,7 +141,6 @@ export default {
       this.isDragging = false;
       const name = this.selectedShapeName;
       const shape = this.getShape(name);
-      const shapetype = this.getSelectedShapeType(name);
       let newx = e.target.attrs.x;
       let newy = e.target.attrs.y;
       shape.x = newx;
@@ -172,63 +180,65 @@ export default {
       
     },
     handleStageMouseDown(e) {
-      if(false) {
-        let temp = [...this.line.points]
-        const nx = e.evt.layerX;
-        const ny = e.evt.layerY;
-        const lx = temp[temp.length-2];
-        const ly = temp[temp.length-1];
-        let x = nx;
-        let y = ny;
-        if(lx != undefined && ly != undefined){
-          if(Math.abs(nx - lx) > Math.abs(ny-ly)){
-            y = ly;
+      if(this.lineTool) {
+        let temp = [...this.lines[this.linesCounter].points]
+        const newx = e.evt.layerX;
+        const newy = e.evt.layerY;
+        const lastx = temp[temp.length-2];
+        const lasty = temp[temp.length-1];
+
+        let x = Math.round(newx/30)*30;
+        let y = Math.round(newy/30)*30;
+        if(lastx != undefined && lasty != undefined){
+          if(Math.abs(newx - lastx) > Math.abs(newy-lasty)){
+            y = lasty;
           }else{
-            x = lx;
-          } 
+            x = lastx;
+          }
         }
 
         temp.push(x);
         temp.push(y);
-        this.line.points = temp;
-        console.log(...this.line.points);
+        this.lines[this.linesCounter].points = temp;
+        console.log(...this.lines[this.linesCounter].points);
         return;
-      }
-      // clicked on stage - clear selection
-      if (e.target === e.target.getStage()) {
-        this.selectedShapeName = '';
-        this.updateTransformer();
-        return;
-      }
-
-      // clicked on transformer - do nothing
-      const clickedOnTransformer =
-        e.target.getParent().className === 'Transformer';
-      if (clickedOnTransformer) {
-        return;
-      }
-
-      // find clicked shape by its name
-      const name = e.target.name();
-      const shape = this.getShape(name);
-      if (shape) {
-        this.selectedShapeName = name;
-        let caso = this.getSelectedShapeType(this.selectedShapeName);
-        switch(caso){
-          case 'starts':
-            this.enabledAnchors = [];
-          break
-          case 'ends':
-            this.enabledAnchors = [];
-          break
-          case 'processes':
-            this.enabledAnchors = ['middle-right', 'bottom-center', 'bottom-right'];
-          break
+      }else{
+        // clicked on stage - clear selection
+        if (e.target === e.target.getStage()) {
+          this.selectedShapeName = '';
+          this.updateTransformer();
+          return;
         }
-      } else {
-        this.selectedShapeName = '';
+
+        // clicked on transformer - do nothing
+        const clickedOnTransformer =
+          e.target.getParent().className === 'Transformer';
+        if (clickedOnTransformer) {
+          return;
+        }
+
+        // find clicked shape by its name
+        const name = e.target.name();
+        const shape = this.getShape(name);
+        if (shape) {
+          this.selectedShapeName = name;
+          let caso = this.getSelectedShapeType(this.selectedShapeName);
+          switch(caso){
+            case 'starts':
+              this.enabledAnchors = [];
+            break
+            case 'ends':
+              this.enabledAnchors = [];
+            break
+            case 'processes':
+              this.enabledAnchors = ['middle-right', 'bottom-center', 'bottom-right'];
+            break
+          }
+        } else {
+          this.selectedShapeName = '';
+        }
+        this.updateTransformer();
       }
-      this.updateTransformer();
     },
     updateTransformer() {
       // here we need to manually attach or detach Transformer node
@@ -357,6 +367,16 @@ export default {
         height: window.innerHeight-40,
       };
       this.panelSize= npanelSize;
+    },
+    toggleLineTool(e){
+      this.lineTool = !this.lineTool;
+      if(!this.lineTool){
+        if(this.lines[this.linesCounter].points.length > 0){
+          this.linesCounter += 1;
+          const randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+          this.lines.push({points:[], color:randomColor});
+        }
+      }
     }
   }
 };

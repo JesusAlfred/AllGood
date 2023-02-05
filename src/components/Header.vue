@@ -2,11 +2,16 @@
   <header>
     <div id="Logo">AllGood</div>
     <div id="Controls">
-      <span>Grid</span>
-      <label class="switch">
-        <input type="checkbox" @click="toggleGrid">
-        <div class="slider round"></div>
-      </label>
+      <div id="lineTool" class="transition" v-bind:style="{transform: `rotate(${deg}deg)`}" @click="toggleLineTool">
+        <img src="@/assets/lineTool.svg" alt="">
+      </div>
+      <div id="Grid">
+        <label class="switch">
+          <input type="checkbox" checked="true" @click="toggleGrid">
+          <div class="slider round"></div>
+        </label>
+        <div>Grid</div>
+      </div>
       <div id="Play">
         <img src="@/assets/play.svg" alt="">
       </div>
@@ -20,16 +25,24 @@
 <script lang="js">
   export default {
     name: 'Header',
-    emits: ["toggleGrid"],
+    emits: ["toggleGrid", "toggleLineTool"],
     props: {
     },
     data() {
       return {
+        deg: 0
       };
+    },
+    mounted() {
+      this.deg = 180;
     },
     methods: {
       toggleGrid(e) {
         this.$emit("toggleGrid", e);
+      },
+      toggleLineTool(e) {
+        this.$emit("toggleLineTool", e);
+        this.deg += 180;
       },
     }
   };
@@ -71,6 +84,24 @@
         height: 100%;
       }
     }
+    #Grid{
+      display: flexbox;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      line-height: 90%;
+    }
+    #lineTool{
+      height: 80%;
+      img{
+        height: 100%;
+      }
+      padding: 0 5px;
+    }  
+  }
+  .transition {
+    transition: transform 0.5s ease-in-out;
   }
   #Logo{
     font-size: 1.6em;
@@ -81,8 +112,8 @@
   .switch {
     position: relative;
     display: inline-block;
-    width: 54px;
-    height: 80%;
+    width: 46px;
+    height: 50%;
   }
   .switch input {
     display: none;
