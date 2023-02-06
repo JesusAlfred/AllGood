@@ -1,8 +1,11 @@
 # AllGood
 
-This template should help get you started developing with Vue 3 in Vite.
+Graphical interface to generate interactive flowcharts
 
-### Usefull docs
+## Preview
+![Alt text](img/CapturePreview.png?raw=true "Title")
+
+## Usefull docs
 
 https://konvajs.org/docs/vue/index.html
 
