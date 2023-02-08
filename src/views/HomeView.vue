@@ -1,5 +1,5 @@
 <template>
-<Header @toggleGrid="toggleGrid" @toggleLineTool="toggleLineTool"/>
+<Header @toggleGrid="toggleGrid" @toggleLineTool="toggleLineTool" @save="save" @open="open"/>
 <div id="container">
 <div id="Panel">
   <Panel 
@@ -63,6 +63,24 @@
         @editProcess="editProcess"
         @dragend="handleDragEnd"
       />
+      <!--<Decision
+        :config="
+        {
+            name: 'Decision1',
+            x: initx,
+            y: inity,
+            width: 100,
+            height: 100,
+            fill: 'white',
+            stroke: 'black',
+            draggable: true,
+            text: '...',
+            scaleX: 1,
+            scaleY: 1,
+            hideEdit: false
+          }
+        "
+      />-->
       <v-transformer
         ref="transformer"
         :rotateEnabled="false"
@@ -377,6 +395,39 @@ export default {
           this.lines.push({points:[], color:randomColor});
         }
       }
+    },
+    save(e){
+      console.log("Save");
+      let object = {
+        shapes: this.shapes,
+        lines: this.lines,
+        startCounter: this.startCounter,
+        endCounter: this.endCounter,
+        processCounter: this.processCounter,
+        linesCounter: this.linesCounter
+      }
+      console.log(object);
+      let saveShapes = JSON.stringify(object);
+      var blob = new Blob([saveShapes], {
+            type: "text/plain;charset=utf-8",
+         });
+      saveAs(blob, "download.txt");
+    },
+    open(e){
+      console.log("open");
+      const reader = new FileReader();
+      reader.onload = (res) => {
+          const object = JSON.parse(res.target.result);
+          this.shapes = object.shapes;
+          this.lines = object.lines;
+          this.startCounter = object.startCounter;
+          this.endCounter = object.endCounter;
+          this.processCounter = object.processCounter;
+          this.linesCounter = object.linesCounter;
+          console.log(object);
+        };
+        reader.onerror = (err) => console.log(err);
+        console.log(reader.readAsText(e));
     }
   }
 };

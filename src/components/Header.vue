@@ -2,6 +2,15 @@
   <header>
     <div id="Logo">AllGood</div>
     <div id="Controls">
+      <div id="Open">
+        <label for="inputFile">
+        <input id="inputFile" type="file" ref="file" @change="open">
+        <img src="@/assets/open.svg" alt="">
+        </label>
+      </div>
+      <div id="Save" @click="save">
+        <img src="@/assets/save.svg" alt="">
+      </div>
       <div id="lineTool" class="transition" v-bind:style="{transform: `rotate(${deg}deg)`}" @click="toggleLineTool">
         <img src="@/assets/lineTool.svg" alt="">
       </div>
@@ -25,7 +34,7 @@
 <script lang="js">
   export default {
     name: 'Header',
-    emits: ["toggleGrid", "toggleLineTool"],
+    emits: ["toggleGrid", "toggleLineTool", "save", "open"],
     props: {
     },
     data() {
@@ -44,6 +53,12 @@
         this.$emit("toggleLineTool", e);
         this.deg += 180;
       },
+      save(e){
+        this.$emit("save", e);
+      },
+      open(e){
+        this.$emit("open", this.$refs.file.files[0]);
+      }
     }
   };
 </script>
@@ -98,7 +113,19 @@
         height: 100%;
       }
       padding: 0 5px;
-    }  
+    }
+    #Save{
+      height: 80%;
+      img{
+        height: 100%;
+      }
+    }
+    #Open{
+      height: 80%;
+      img{
+        height: 100%;
+      }
+    }
   }
   .transition {
     transition: transform 0.5s ease-in-out;
@@ -163,5 +190,11 @@
 
   .slider.round:before {
     border-radius: 50%;
+  }
+  input{
+    display: none;
+  }
+  label{
+    cursor: pointer;
   }
 </style>
