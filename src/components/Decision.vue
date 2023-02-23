@@ -19,7 +19,7 @@
       scaleX: config.scaleX,
       scaleY: config.scaleY,
       strokeScaleEnabled: false,
-      rotation: 45
+      rotation: config.rotation
     }
     "
     @transformend="sendEvent"

@@ -12,7 +12,8 @@
 
       <StartButton :position="{x: xPadding, y: 30}"/> 
       <EndButton :position="{x: xPadding + 60 + (panelSize.width - 120 - xPadding*2), y: 30}"/> 
-      <ProcessButton :position="{x:xPadding, y: 140}"/>
+      <ProcessButton :position="{x: xPadding, y: 140}"/>
+      <DecisionButton :position="{x: xPadding, y: 230}"/>
 
     </v-layer>
   </v-stage>
@@ -22,6 +23,7 @@
 import StartButton from './PanelButtons/StartButton.vue';
 import EndButton from './PanelButtons/EndButton.vue';
 import ProcessButton from './PanelButtons/ProcessButton.vue'
+import DecisionButton from './PanelButtons/DecisionButton.vue';
 
   export default {
     name: 'Panel',
@@ -44,7 +46,7 @@ import ProcessButton from './PanelButtons/ProcessButton.vue'
           xPadding: (this.panelSize.width - 120) / 3
         };
     },
-    components: {StartButton, EndButton, ProcessButton},
+    components: {StartButton, EndButton, ProcessButton, DecisionButton},
     methods: {
       handlePanelMouseDown(e) {
         this.$emit("handlePanelMouseDown", e);

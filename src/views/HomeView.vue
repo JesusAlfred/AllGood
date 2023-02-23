@@ -37,6 +37,7 @@
           draggable: false
         }"
       />
+
       <Start
         v-for="item in shapes.starts"
         :key="item.id"
@@ -53,7 +54,6 @@
         @dragstart="handleDragStart"
         @dragend="handleDragEnd"
       />
-      <!-- <Decision /> -->
       <Process 
         v-for="item in shapes.processes"
         :key="item.id"
@@ -63,24 +63,16 @@
         @editProcess="editProcess"
         @dragend="handleDragEnd"
       />
-      <!--<Decision
-        :config="
-        {
-            name: 'Decision1',
-            x: initx,
-            y: inity,
-            width: 100,
-            height: 100,
-            fill: 'white',
-            stroke: 'black',
-            draggable: true,
-            text: '...',
-            scaleX: 1,
-            scaleY: 1,
-            hideEdit: false
-          }
-        "
-      />-->
+      <Decision 
+        v-for="item in shapes.decisions"
+        :key="item.id"
+        :config="item"
+        @transformend="handleTransformEnd"
+        @transformstart="handleTransformStart"
+        @editProcess="editProcess"
+        @dragend="handleDragEnd"
+      />
+
       <v-transformer
         ref="transformer"
         :rotateEnabled="false"
@@ -125,6 +117,8 @@ export default {
         ends: [
         ],
         processes: [
+        ],
+        decisions: [
         ]
       },
       grid: true,
@@ -137,6 +131,7 @@ export default {
       startCounter: 0,
       endCounter: 0,
       processCounter: 0,
+      decisionCounter: 0,
       linesCounter: 0,
       lineTool: false
     };
@@ -151,6 +146,7 @@ export default {
   destroyed() {
     window.removeEventListener("resize", this.resizeScreen);
   },
+
   methods: {
     handleDragStart(e) {
       this.isDragging = true;
@@ -250,6 +246,9 @@ export default {
             break
             case 'processes':
               this.enabledAnchors = ['middle-right', 'bottom-center', 'bottom-right'];
+            break
+            case 'decisions':
+            this.enabledAnchors = ['middle-right', 'bottom-center', 'bottom-right'];
             break
           }
         } else {
@@ -369,6 +368,25 @@ export default {
           }
           this.shapes.processes.push(PprocessBase);
           break
+        case 'Pdecision':
+          console.log("Hola")
+          this.decisionCounter += 1;
+          const pDecisionBase = {
+            name: "Pdecision" + this.decisionCounter.toString(),
+            x: initx,
+            y: inity,
+            width: 100,
+            height: 100,
+            fill: 'white',
+            stroke: "black",
+            draggable: true,
+            // text: "...",
+            scaleX: 1,
+            scaleY: 1,
+            rotation: 45
+          }
+          this.shapes.decisions.push(pDecisionBase);
+          break
       }
     },
     toggleGrid(e){
@@ -404,7 +422,8 @@ export default {
         startCounter: this.startCounter,
         endCounter: this.endCounter,
         processCounter: this.processCounter,
-        linesCounter: this.linesCounter
+        linesCounter: this.linesCounter,
+        decisionCounter: this.decisionCounter
       }
       console.log(object);
       let saveShapes = JSON.stringify(object);
@@ -424,6 +443,7 @@ export default {
           this.endCounter = object.endCounter;
           this.processCounter = object.processCounter;
           this.linesCounter = object.linesCounter;
+          this.decisionCounter = object.decisionCounter;
           console.log(object);
         };
         reader.onerror = (err) => console.log(err);
